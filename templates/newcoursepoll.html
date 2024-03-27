@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Uusi kurssi</h1>
+<hr>
+{{  course_name  }}
+<br>
+<b>Lisää monivalintatehtävä</b>
+<br>
+<form action="/create/{{ id }}" method="POST">
+    <p>Kysymys:<br>
+    <input type="text" name="question"></p>
+    <p>Vaihtoehto 1:<br>
+    <input type="text" name="choice"></p>
+    <p>Vaihtoehto 2:<br>
+    <input type="text" name="choice"></p>
+    <p>Vaihtoehto 3:<br>
+    <input type="text" name="choice"></p>
+    <p>Vaihtoehto 4:<br>
+    <input type="text" name="choice"></p>
+    <p>Oikea vastaus vaihtoehto:<br>
+    <input type="number" min="1" max="4" name="answer"></p>
+    <input type="submit" value="Lisää tehtävä">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+    <br>
+    {% endblock %}

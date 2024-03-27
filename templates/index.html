@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block title %}Etusivu{% endblock %}
+{% block content %}
+<h1>Etusivu</h1>
+<hr>
+{% if session.username %}
+    <p>  
+<h3>Omat kurssisi</h3>
+{% if count == 0 %}
+<hr>
+<br>
+<h4>Et ole liittynyt vielä millekään kurssille. Voit liittyä kursseille kurssisivulta.</h4>
+<br>
+<a href="/courses" class="btn btn-primary" role="button">Kurssisivulle</a>
+<a href="/logout" class="btn btn-dark" role="button">kirjaudu ulos</a>
+{% else %}
+<br>
+    {% for course in courses %}
+    <b>{{ course.name }}</b>
+<p><a href="/course/{{ course.id }}">Näytä kurssi</a></p>
+<hr>
+<div style = "position:relative; left:100px; top:-57px;">
+<a href="/stats/{{ course.id }}">Näytä kurssin tilastot</a>
+</div>
+    {% endfor %}
+<p>Olet kirjautunut sisään käyttäjällä {{  session.username  }}</p>
+    <br>
+<a href="/logout" class="btn btn-dark" role="button">kirjaudu ulos</a>
+<a href="/courses" class="btn btn-secondary" role="button">Kurssisivulle</a>
+<br>
+{% endif %}
+{% else %}
+<B>Kirjaudu sisään</b>
+    <br>
+        <br>
+    <form action="/login" method="POST">
+        <p>Käyttäjätunnus: <br>
+        <input type="username" name="username"></p>
+        <p>Salasana: <br>
+        <input type="password" name="password"></p>
+        <input type="submit" value="Kirjaudu">
+        </form>
+        <br>
+        <a href="/register" class="btn btn-primary" role="button">Luo uusi tili</a>
+       
+        {% endif %}
+{% endblock %}

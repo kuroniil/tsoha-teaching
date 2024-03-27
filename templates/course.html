@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1>Kurssimateriaali</h1>
+{% for content in f_contents%}
+{{ content | safe }}
+{%endfor%}
+<br>
+<br>
+<h2>Monivalintatehtävät</h2>
+{% for question in questions %}
+<br>
+<b>Tehtävä {{  loop.index  }}.</b>
+{{ question[1] }}
+&nbsp;
+&nbsp;
+{% for problem in solved_problems %}
+{% if problem.problem_id == question[0] %}
+<div style = "position:relative; top:5px; width:165px; border-radius:10px; padding:0.8%; color:white; background-color:rgb(34, 165, 45);">
+    Oikein ratkaistu &#10003;
+ </div>
+{% else %}
+{% endif %}
+{% endfor %}
+<hr>
+<form action="/answer/{{ id  }}" method="POST">
+{% for choice in res[question[0]] %}
+<input type="radio" name="{{  question[0], question[2]  }}" value="{{ choice[1] }}"> {{ choice[0] }} <br>
+{% endfor %}
+<hr>
+{% endfor %}
+<p>
+    <input type="submit" value="Tarkista vastaukset">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <input type="hidden" name="id" value="{{ id }}">
+    </form>
+
+    <br>
+{% if is_teacher %}
+<a href="/edit/{{  id  }}" class="btn btn-primary" role="button">Muokkaa kurssia</a>
+    <br>
+{% else %}
+{% endif %}
+<br>
+<br>
+{% endblock %}

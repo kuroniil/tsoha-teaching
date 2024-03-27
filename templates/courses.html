@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block title %}Kurssit{% endblock %} 
+{% block content %}
+<h1>Kurssit</h1>
+<br>
+<h4>Tältä sivulta voit liittyä kursseille</h4>
+<hr>
+{% if session.username %} 
+<b>Kursseja tarjolla: </b> {{ count }}
+<hr>
+{% for course in courses %}
+{% if course.id not in user_courses %}
+<b>{{ course.name }}</b>
+<p><a href="/confirmation/joincourse/{{ course.id }}">Liity kurssille</a></p>
+{% else %}
+<b>{{ course.name }}</b>
+<p><a href="/course/{{ course.id }}">Näytä kurssi</a></p>
+<hr>
+{% endif %}
+<hr>
+    {% endfor %}    
+{% if is_teacher() %}
+<p><a href="/newcoursename" class="btn btn-primary">Luo uusi kurssi</a></p>
+{% else %}
+{% endif %}
+{% else %}
+<br>
+<b>Kirjaudu sisään nähdäksesi kurssit</b>
+<br>
+<br>
+<p><a href="/login" class="btn btn-primary">Kirjautumissivulle</a></p>
+{% endif %}
+{% endblock %}
