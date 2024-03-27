@@ -24,41 +24,41 @@ CREATE TABLE Users (
   username TEXT UNIQUE,
   password TEXT,
   title TEXT
-  );
+);
 
-  CREATE TABLE TextContent (
-    id SERIAL PRIMARY KEY,
-    course_id INTEGER REFERENCES Courses(id),
-    visible BOOLEAN,
-    content TEXT
-  );
+CREATE TABLE TextContent (
+  id SERIAL PRIMARY KEY,
+  course_id INTEGER REFERENCES Courses(id),
+  visible BOOLEAN,
+  content TEXT
+);
 
-  CREATE TABLE TextProblem (
-    id SERIAL PRIMARY KEY,
-    course_id INTEGER REFERENCES Courses(id),
-    problem_id INTEGER,
-    visible BOOLEAN,
-    answer TEXT
-  );
+CREATE TABLE TextProblem (
+  id SERIAL PRIMARY KEY,
+  course_id INTEGER REFERENCES Courses(id),
+  problem_id INTEGER,
+  visible BOOLEAN,
+  answer TEXT
+);
 
-  CREATE TABLE Choices (
-    id SERIAL PRIMARY KEY,
-    course_id INTEGER REFERENCES Courses(id),
-    choice_number INTEGER,
-    content TEXT,
-    problem_id INTEGER REFERENCES ChoiceProblems(id)
-  );
+CREATE TABLE Choices (
+  id SERIAL PRIMARY KEY,
+  course_id INTEGER REFERENCES Courses(id),
+  choice_number INTEGER,
+  content TEXT,
+  problem_id INTEGER REFERENCES ChoiceProblems(id)
+);
 
-  CREATE TABLE SolvedProblems (
-    id SERIAL PRIMARY KEY,
-    course_id INTEGER REFERENCES Courses(id),
-    problem_id INTEGER,
-    user_id INTEGER REFERENCES Users(id),
-    type TEXT
-  );
+CREATE TABLE SolvedProblems (
+  id SERIAL PRIMARY KEY,
+  course_id INTEGER REFERENCES Courses(id),
+  problem_id INTEGER,
+  user_id INTEGER REFERENCES Users(id),
+  type TEXT
+);
 
-  CREATE TABLE CourseProblems (
-    course_id INTEGER REFERENCES Courses(id),
-    problem_id INTEGER REFERENCES SolvedProblems(problem_id),
-    id_number INTEGER
-  );
+CREATE TABLE CourseProblems (
+  course_id INTEGER REFERENCES Courses(id),
+  problem_id INTEGER REFERENCES SolvedProblems(problem_id),
+  id_number INTEGER
+);
