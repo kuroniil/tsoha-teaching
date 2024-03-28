@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block title %}Stats{% endblock %}
+
+{% block content %}
+<h1>{{ course_name }}</h1>
+<hr>
+<p>
+<h2>Kurssin edistyminen</h2>
+<p>
+    {% for student in course_students %}
+    <table style="width:100%">     
+        <br>
+        <b>{{ get_username(student.user_id) }}</b>
+        <tr>
+            <th>Tehtävä</th>
+            <th>Tila</th> 
+          </tr>
+        <p>
+        <tr>
+            {% for problem in course_problems %}
+                {% if problem.problem_id in help_function(solved_problems(course_id, student.user_id), 0) %}
+                    <td class="bgcolor">{{ loop.index }}.</td>
+                    <td class="bgcolor">ratkaistu</td> 
+                    </tr>
+                {% else %}
+        <tr>
+                <td class="bgcolor2">{{ loop.index }}</td>
+                <td class="bgcolor2">ei ratkaistu</td> 
+                </tr>
+                {% endif %}
+            {% endfor %}
+            <p>
+    {% endfor %}
+{% endblock %}

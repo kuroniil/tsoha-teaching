@@ -1,5 +1,45 @@
 {% extends "layout.html" %}
+
 {% block title %}Stats{% endblock %}
 {% block content %}
+
 <h1>Analytiikka</h1>
-{% endblock %}
+<br>
+    {% if session.username %}
+    {% if is_teacher() == False %}
+    <p>
+    {% for course in courses() %}
+    <table style="width:100%">
+        <h2>{{ course[0] }}</h2>
+        <tr>
+            <th>Tehtävä</th>
+            <th>Tila</th> 
+          </tr>
+        {% for problem in problems(course.id) %}
+    {% if problem.problem_id in help_function(solved_problems(course.id), 0) %}
+    <tr>
+      <td class="bgcolor">Tehtävä {{ loop.index  }}</td>
+      <td class="bgcolor">Ratkaistu</td>
+    </tr>
+    {% else %}
+    <tr>
+        <td class="bgcolor2">Tehtävä {{ loop.index  }}</td>
+        <td class="bgcolor2">Ei ratkaistu</td>
+      </tr>
+      {% endif %}
+        {% endfor %}
+        <p>
+    </table>
+    <p>
+    {% endfor %}
+    {% else %}
+    <h2>Valitse kurssi, minkä tilastot haluat nähdä</h2>
+    <br>
+    {% for course in courses() %}
+    {{ course[0 ]}} <p><a href="/stats/{{ course.id }}">Näytä tilastot</a></p>
+    {% endfor %}
+    {% endif %}
+    {% else %}
+    Kirjaudu sisään nähdäksesi tilastot
+    {% endif %}
+    {% endblock %}

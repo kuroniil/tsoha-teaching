@@ -34,7 +34,6 @@
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="id" value="{{ id }}">
     </form>
-
     <br>
 {% if is_teacher %}
 <a href="/edit/{{  id  }}" class="btn btn-primary" role="button">Muokkaa kurssia</a>

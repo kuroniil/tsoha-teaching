@@ -86,3 +86,9 @@ def get_user_courses():
         courses = result.fetchall()
         return courses
     return []
+
+
+def get_username(user_id):
+    sql = text("SELECT username FROM Users WHERE id = :user_id")
+    result = db.session.execute(sql, {"user_id":user_id})
+    return result.fetchone()[0]

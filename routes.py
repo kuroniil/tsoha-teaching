@@ -161,9 +161,12 @@ def register():
 # statistics
 @app.route("/stats")
 def stats():
-    return render_template("stats.html")
+    return render_template("stats.html", solved_problems=courses.solved_problems, courses=users.get_user_courses, problems=courses.get_course_problems, help_function=courses.help_function, is_teacher=users.is_teacher)
 
 
 @app.route("/stats/<int:id>")
 def stats_by_course(id):
-    return render_template("stats.html")
+    sql = text("SELECT name from Courses WHERE id = :course_id")
+    result = db.session.execute(sql, {"course_id":id})
+    course_name = result.fetchone()[0]
+    return render_template("coursestats.html", get_username=users.get_username, help_function=courses.help_function, solved_problems=courses.solved_problems, course_id=id, course_problems=courses.get_course_problems(id), course_students=courses.course_students(id), course_name=course_name)

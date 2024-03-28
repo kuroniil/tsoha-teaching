@@ -8,16 +8,16 @@ def courses_page():
     user_courses = []
     if session.get("username", 0) != 0:
         user_courses = users.get_user_courses()
-        user_courses = help_function(user_courses)
+        user_courses = help_function(user_courses, 1)
     result = db.session.execute(text("SELECT name, id FROM Courses WHERE visible = TRUE"))
     courses = result.fetchall()
     return render_template("courses.html", count=len(courses), courses=courses, is_teacher=users.is_teacher, user_courses=user_courses)
 
 
-def help_function(t):
+def help_function(t, index):
     f = []
     for i in range(len(t)):
-        f.append(t[i][1])
+        f.append(t[i][index])
     return f
 
 
@@ -138,8 +138,9 @@ def choice_problem_check(course_id):
                 print("väärin")
 
 
-def solved_problems(course_id):
-    user_id = users.get_user_id()
+def solved_problems(course_id, user_id=""):
+    if user_id == "":
+        user_id = users.get_user_id()
     sql = text("SELECT DISTINCT problem_id, type FROM SolvedProblems WHERE course_id = :course_id " \
                "AND user_id = :user_id")
     result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id})
@@ -148,5 +149,11 @@ def solved_problems(course_id):
 
 def get_course_problems(course_id):
     sql = text("SELECT problem_id, id_number FROM CourseProblems WHERE course_id = :course_id")
+    result = db.session.execute(sql, {"course_id":course_id})
+    return result.fetchall()
+
+
+def course_students(course_id):
+    sql = text("SELECT user_id FROM CourseStudents WHERE course_id = :course_id")
     result = db.session.execute(sql, {"course_id":course_id})
     return result.fetchall()

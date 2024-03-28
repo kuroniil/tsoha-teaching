@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/main.css">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <div class="container">
     <nav class="navbar navbar-expand-sm navbar-light">
@@ -16,5 +17,7 @@
         </li>
       </ul>
     </nav>
-{% block content %}
+  <div style = "position: absolute; top:0; bottom:0; left: 0; right: 84%; overflow:hidden; z-index: -1; float: left; background: rgb(170, 248, 134);"></div>
+  <div style = "position: absolute; top:0; bottom:0; left: 84%; right: 0; overflow:hidden; z-index: -1; float: right; background: rgb(170, 248, 134);"></div>
+    {% block content %}
     {% endblock %}  
