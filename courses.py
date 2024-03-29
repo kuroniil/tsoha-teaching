@@ -31,13 +31,17 @@ def course_page(id):
         f_content = f_content.replace("\r", "")
         f_contents.append(f_content)
     
-    sql2 = text("SELECT id, question, answer FROM ChoiceProblems WHERE course_id = :course_id;")
-    result = db.session.execute(sql2, {"course_id":id})
+    sql = text("SELECT id, question, answer FROM ChoiceProblems WHERE course_id = :course_id AND visible = TRUE")
+    result = db.session.execute(sql, {"course_id":id})
     questions = result.fetchall()
     
-    sql3 = text("SELECT problem_id, content, choice_number FROM Choices WHERE course_id = :course_id ORDER BY problem_id;")
-    result = db.session.execute(sql3, {"course_id":id})
+    sql = text("SELECT problem_id, content, choice_number FROM Choices WHERE course_id = :course_id ORDER BY problem_id;")
+    result = db.session.execute(sql, {"course_id":id})
     choices = result.fetchall()
+
+    sql = text("SELECT COUNT(id) FROM ChoiceProblems WHERE course_id = :course_id AND visible = TRUE")
+    result = db.session.execute(sql, {"course_id":id})
+    count = result.fetchone()[0]
 
     res = {}
     for i in range(len(choices)):
@@ -46,10 +50,11 @@ def course_page(id):
         else:
             res[choices[i][0]] = [(choices[i][1], choices[i][2])]
 
-    return render_template("course.html", id=id, f_contents=f_contents, questions=questions, res=res, is_teacher=users.is_teacher(), choices=choices, solved_problems=solved_problems(id), course_problems=get_course_problems) 
+    return render_template("course.html", id=id, f_contents=f_contents, textproblems=get_textproblems(id), questions=questions, res=res, is_teacher=users.is_teacher(), choices=choices, solved_problems=solved_problems(id), course_problems=get_course_problems, count=count) 
 
 
 def create_course():
+    users.check_csrf()
     course_name = request.form["course_name"]
     username = session.get("username", 0)
     sql = text("SELECT id FROM Users WHERE username = :username")
@@ -60,6 +65,7 @@ def create_course():
 
 
 def create_course_name():
+    users.check_csrf()
     course_name = request.form["course_name"]
     username = session.get("username", 0)
     sql = text("SELECT id FROM Users WHERE username = :username")
@@ -78,6 +84,7 @@ def is_editing(id):
 
 
 def add_textcontent(id):
+    users.check_csrf()
     content = request.form["content"]
     add(content, id)
     
@@ -89,12 +96,12 @@ def add(content, course_id):
 
 
 def create_poll(id):
+    users.check_csrf()
     question = request.form["question"]    
     answer = request.form["answer"]
     sql = text("INSERT INTO ChoiceProblems (question, course_id, answer, visible) VALUES (:question, :id, :answer, TRUE) RETURNING id")
     result = db.session.execute(sql, {"question":question, "id":id, "answer":answer})
     problem_id = result.fetchone()[0]
-
     sql = text("SELECT id_number FROM CourseProblems WHERE course_id = :course_id ORDER BY id_number")
     result = db.session.execute(sql, {"course_id":id})
     id_number = result.fetchall()
@@ -102,10 +109,8 @@ def create_poll(id):
         id_number = 1
     else:
         id_number = id_number[-1][0] + 1
-
     sql = text("INSERT INTO CourseProblems (id_number, problem_id, course_id) VALUES (:id_number, :problem_id, :course_id)")
     result = db.session.execute(sql, {"id_number":id_number, "problem_id":problem_id, "course_id":id})
-    
     choices = request.form.getlist("choice")
     for count, choice in enumerate(choices, 1):    
         if choice != "":
@@ -123,6 +128,7 @@ def delete_course(id):
 
 
 def choice_problem_check(course_id):
+    users.check_csrf()
     user_id = users.get_user_id()
     for choice_id, ans in request.form.items():
         if choice_id != "id" and choice_id != "csrf_token":
@@ -157,3 +163,43 @@ def course_students(course_id):
     sql = text("SELECT user_id FROM CourseStudents WHERE course_id = :course_id")
     result = db.session.execute(sql, {"course_id":course_id})
     return result.fetchall()
+
+
+def create_textproblem(course_id):
+    users.check_csrf()
+    sql = text("SELECT GREATEST((SELECT id FROM ChoiceProblems ORDER BY id DESC LIMIT 1)," \
+                "(SELECT problem_id FROM TextProblems ORDER BY problem_id DESC LIMIT 1))")
+    result = db.session.execute(sql)
+    problem_id = result.fetchone()[0] + 1
+    answer = request.form["textanswer"]
+    question = request.form["textquestion"]
+    sql = text("INSERT INTO TextProblems (course_id, problem_id, answer, visible, question) VALUES (:course_id, :problem_id, :answer, TRUE, :question)")
+    db.session.execute(sql, {"course_id":course_id, "problem_id":problem_id, "answer":answer, "question":question})
+    sql = text("SELECT COALESCE((SELECT id_number FROM CourseProblems WHERE course_id = :course_id ORDER BY id_number DESC LIMIT 1), 1)")
+    result = db.session.execute(sql, {"course_id":course_id})
+    id_number = result.fetchone()[0]
+    if id_number != 1:
+        id_number += 1
+    sql = text("INSERT INTO CourseProblems (problem_id, id_number, course_id) VALUES (:problem_id, :id_number, :course_id)")
+    result = db.session.execute(sql, {"course_id":course_id, "id_number":id_number, "problem_id":problem_id})
+    db.session.commit()
+
+
+def get_textproblems(course_id):
+    sql = text("SELECT question, answer, problem_id FROM TextProblems WHERE course_id = :course_id")
+    result = db.session.execute(sql, {"course_id":course_id})
+    return result.fetchall()
+
+
+def textproblem_check(course_id):
+    users.check_csrf()
+    user_id = users.get_user_id()
+    problem_id = request.form["problem_id"]
+    user_answer = request.form["textanswer"]
+    correct_answer = request.form["correctanswer"]
+    if user_answer == correct_answer:
+        sql = text("INSERT INTO SolvedProblems (course_id, problem_id, user_id, type) VALUES (:course_id, :problem_id, :user_id, 'text')")
+        db.session.execute(sql, {"course_id":course_id, "problem_id":problem_id, "user_id":user_id})
+        db.session.commit()
+    else:
+        print("väärin")

@@ -33,12 +33,13 @@ CREATE TABLE TextContent (
   content TEXT
 );
 
-CREATE TABLE TextProblem (
+CREATE TABLE TextProblems (
   id SERIAL PRIMARY KEY,
   course_id INTEGER REFERENCES Courses(id),
   problem_id INTEGER,
   visible BOOLEAN,
-  answer TEXT
+  answer TEXT,
+  question TEXT
 );
 
 CREATE TABLE Choices (
@@ -59,6 +60,6 @@ CREATE TABLE SolvedProblems (
 
 CREATE TABLE CourseProblems (
   course_id INTEGER REFERENCES Courses(id),
-  problem_id INTEGER REFERENCES SolvedProblems(problem_id),
+  problem_id INTEGER,
   id_number INTEGER
 );

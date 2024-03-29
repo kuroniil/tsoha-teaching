@@ -4,9 +4,10 @@
 {% block content %}
 
 <h1>Analytiikka</h1>
-<br>
+<hr>
     {% if session.username %}
     {% if is_teacher() == False %}
+    {% if not id %}
     <p>
     {% for course in courses() %}
     <table style="width:100%">
@@ -33,10 +34,33 @@
     <p>
     {% endfor %}
     {% else %}
-    <h2>Valitse kurssi, minkä tilastot haluat nähdä</h2>
+    <table style="width:100%">
+      <h2>{{ course_name }}</h2>
+      <p>
+        <br>
+      <tr>
+          <th>Tehtävä</th>
+          <th>Tila</th> 
+        </tr>
+      {% for problem in problems(id) %}
+        {% if problem.problem_id in help_function(solved_problems(id), 0) %}
+    <tr>
+    <td class="bgcolor">Tehtävä {{ loop.index  }}</td>
+    <td class="bgcolor">Ratkaistu</td>
+  </tr>
+        {% else %}
+    <tr>
+      <td class="bgcolor2">Tehtävä {{ loop.index  }}</td>
+      <td class="bgcolor2">Ei ratkaistu</td>
+    </tr>
+      {% endif %}
+    {% endfor %}
+    {% endif %}
+    {% else %}
+    <h4>Valitse kurssi, minkä tilastot haluat nähdä</h4>
     <br>
     {% for course in courses() %}
-    {{ course[0 ]}} <p><a href="/stats/{{ course.id }}">Näytä tilastot</a></p>
+    <b>{{ course[0 ]}}</b> <p><a href="/stats/{{ course.id }}">Näytä tilastot</a></p>
     {% endfor %}
     {% endif %}
     {% else %}

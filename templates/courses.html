@@ -2,11 +2,11 @@
 {% block title %}Kurssit{% endblock %} 
 {% block content %}
 <h1>Kurssit</h1>
-<br>
-<h4>Tältä sivulta voit liittyä kursseille</h4>
 <hr>
+<h4>Tältä sivulta voit liittyä kursseille</h4>
+
 {% if session.username %} 
-<b>Kursseja tarjolla: </b> {{ count }}
+
 <hr>
 {% for course in courses %}
 {% if course.id not in user_courses %}
@@ -24,7 +24,7 @@
 {% endif %}
 {% else %}
 <br>
-<b>Kirjaudu sisään nähdäksesi kurssit</b>
+Kirjaudu sisään nähdäksesi kurssit
 <br>
 <br>
 <p><a href="/login" class="btn btn-primary">Kirjautumissivulle</a></p>

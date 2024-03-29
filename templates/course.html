@@ -35,6 +35,34 @@
     <input type="hidden" name="id" value="{{ id }}">
     </form>
     <br>
+<h2>Muut tehtävät</h2>
+<br>
+{% for problem in textproblems %}
+<p>
+<b>Tehtävä {{ count + loop.index }}.</b>
+{{  problem.question  }}
+{% for solved_problem in solved_problems %}
+{% if problem.problem_id == solved_problem.problem_id %}
+<div style = "position:relative; top:5px; width:165px; border-radius:10px; padding:0.8%; color:white; background-color:rgb(34, 165, 45);">
+    Oikein ratkaistu &#10003;
+ </div>
+{% else %}
+{% endif %}
+{% endfor %}
+<hr>
+</p>
+<p><form id="{{ problem.problem_id }}" action="{{ url_for('textproblem_check', id=id) }}" method="post">
+    <input type="text" name="textanswer" required size="15">
+    <br>
+    <br>
+    <input type="submit" value="Vastaa">
+    <input type="hidden" name="problem_id" value="{{ problem.problem_id }}">
+    <input type="hidden" name="correctanswer" value="{{ problem.answer }}">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+</p>
+<hr>
+{% endfor %}
 {% if is_teacher %}
 <a href="/edit/{{  id  }}" class="btn btn-primary" role="button">Muokkaa kurssia</a>
     <br>

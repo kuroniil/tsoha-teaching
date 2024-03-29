@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Muokkaat kurssia</h1>
+<b>Lisää tekstimateriaalia</b>
+<br>
+<br>
+<form action="/addcontent/{{ id }}" method="post">
+    Teksti: <br>
+    <textarea name="content" rows="10" cols="100"></textarea>
+    <br>
+    <input type="submit" value="Lisää">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+<br>
+<b>Lisää monivalintatehtävä</b>
+<br>
+<br>
+<form action="/create/{{ id }}" method="POST">
+    <p>Kysymys:<br>
+    <input type="text" name="question"></p>
+    <p>Vaihtoehto 1:<br>
+    <input type="text" name="choice"></p>
+    <p>Vaihtoehto 2:<br>
+    <input type="text" name="choice"></p>
+    <p>Vaihtoehto 3:<br>
+    <input type="text" name="choice"></p>
+    <p>Vaihtoehto 4:<br>
+    <input type="text" name="choice"></p>
+    <p>Oikea vastaus vaihtoehto:<br>
+    <input type="number" min="1" max="4" name="answer" required></p>
+    <input type="submit" value="Lisää tehtävä">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+    <br>
+
+
+<b>Lisää tehtävä tekstivastauksella</b>
+<br>
+<br>
+<form id=1 action="/addtextproblem/{{ id }}" method="post">
+    Kysymys: <br>
+    <input type="text" name="textquestion" required size="40">
+    <br>
+    <br>
+    Oikea vastaus:
+    <br>
+    <input type="text" name="textanswer" required size="40">
+    <br>
+    <br>
+    <input type="submit" value="Lisää">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+<br>
+
+    {% endblock %}

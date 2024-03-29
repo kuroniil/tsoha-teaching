@@ -1,6 +1,6 @@
 from db import db
 import secrets
-from flask import render_template, request, session
+from flask import render_template, request, session, abort
 from sqlalchemy.sql import text
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -92,3 +92,8 @@ def get_username(user_id):
     sql = text("SELECT username FROM Users WHERE id = :user_id")
     result = db.session.execute(sql, {"user_id":user_id})
     return result.fetchone()[0]
+
+
+def check_csrf():
+    if session["csrf_token"] != request.form["csrf_token"]:
+        abort(403)

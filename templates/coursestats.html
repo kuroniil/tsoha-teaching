@@ -9,6 +9,8 @@
 <h2>Kurssin edistyminen</h2>
 <p>
     {% for student in course_students %}
+    {% if session.username == get_username(student.user_id) %}
+    {% else %}
     <table style="width:100%">     
         <br>
         <b>{{ get_username(student.user_id) }}</b>
@@ -31,5 +33,6 @@
                 {% endif %}
             {% endfor %}
             <p>
+    {% endif %}
     {% endfor %}
 {% endblock %}

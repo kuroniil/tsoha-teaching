@@ -65,9 +65,17 @@ def confirm_joincourse(id):
 # Edit the course
 @app.route("/edit/<int:id>")
 def edit_course(id):
-    if users.is_teacher():
+    sql = text("SELECT teacher_id FROM Courses WHERE id = :course_id")
+    result = db.session.execute(sql, {"course_id":id})
+    teacher_id = result.fetchone()[0]
+    if teacher_id == users.get_user_id():
         return render_template("edit.html", id=id)
     return render_template("error.html", message="Ei oikeutta sivulle")
+
+
+@app.route("/addtocourse/<int:id>")
+def add_content(id):
+    return render_template("addcontent.html", id=id)
 
 
 # Add course text materials
@@ -75,7 +83,7 @@ def edit_course(id):
 def add_textcontent(id):
     if courses.is_editing(id):
         courses.add_textcontent(id)
-        return redirect(f"/edit/{id}")
+        return redirect(f"/addtocourse/{id}")
     else:
         courses.add_textcontent(id)
         return render_template("newcoursepoll.html", id=id)
@@ -89,9 +97,15 @@ def create_poll(id):
         editing = True
     courses.create_poll(id)
     if editing:
-        return redirect(f"/edit/{id}")
+        return redirect(f"/addtocourse/{id}")
     return redirect(f"/course/{id}")
 
+
+# Create a text problem
+@app.route("/addtextproblem/<int:id>", methods=["POST"])
+def add_text_problem(id):
+    courses.create_textproblem(id)
+    return redirect(f"/addtocourse/{id}")
 
 # Delete the course
 @app.route("/deletecourseconfirm/<int:id>")
@@ -166,7 +180,31 @@ def stats():
 
 @app.route("/stats/<int:id>")
 def stats_by_course(id):
-    sql = text("SELECT name from Courses WHERE id = :course_id")
+    sql = text("SELECT name, teacher_id from Courses WHERE id = :course_id AND visible = TRUE")
     result = db.session.execute(sql, {"course_id":id})
-    course_name = result.fetchone()[0]
-    return render_template("coursestats.html", get_username=users.get_username, help_function=courses.help_function, solved_problems=courses.solved_problems, course_id=id, course_problems=courses.get_course_problems(id), course_students=courses.course_students(id), course_name=course_name)
+    product = result.fetchone()
+    course_name = product[0]
+    teacher_id = product[1]
+    user_id = users.get_user_id()
+    if users.is_teacher():
+        if user_id == teacher_id:
+            return render_template("coursestats.html", get_username=users.get_username, help_function=courses.help_function, solved_problems=courses.solved_problems, course_id=id, course_problems=courses.get_course_problems(id), course_students=courses.course_students(id), course_name=course_name, get_user_id=users.get_user_id)
+        else:
+            return render_template("error.html", message="Ei oikeutta sivulle")
+    else:
+        sql = text("SELECT user_id FROM CourseStudents WHERE course_id = :course_id")
+        result = db.session.execute(sql, {"course_id":id})
+        students = result.fetchall()
+        studentlist = courses.help_function(students, 0)
+        if user_id in studentlist:
+            return render_template("stats.html", solved_problems=courses.solved_problems, courses=users.get_user_courses, problems=courses.get_course_problems, help_function=courses.help_function, is_teacher=users.is_teacher, id=id, course_name=course_name)
+        else:
+            return render_template("error.html", message="Et ole kurssilla tai et ole kirjautunut sisään")
+        
+
+@app.route("/textproblemcheck/<int:id>", methods=["POST"])
+def textproblem_check(id):
+    users.check_csrf()
+    courses.textproblem_check(id)
+    problem_id = request.form["problem_id"]
+    return redirect(f"/course/{id}#{problem_id}")

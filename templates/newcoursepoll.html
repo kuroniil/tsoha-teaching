@@ -18,7 +18,7 @@
     <p>Vaihtoehto 4:<br>
     <input type="text" name="choice"></p>
     <p>Oikea vastaus vaihtoehto:<br>
-    <input type="number" min="1" max="4" name="answer"></p>
+    <input type="number" min="1" max="4" name="answer" required></p>
     <input type="submit" value="Lisää tehtävä">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     </form>
