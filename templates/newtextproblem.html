@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Uusi kurssi</h1>
+<hr>
+<br>
+<b>Lisää tehtävä tekstivastauksella</b>
+<br>
+<br>
+<form id=1 action="/addtextproblem/{{ id }}" method="post">
+    Kysymys: <br>
+    <input type="text" name="textquestion" required size="40">
+    <br>
+    <br>
+    Oikea vastaus:
+    <br>
+    <input type="text" name="textanswer" required size="40">
+    <br>
+    <br>
+    <input type="submit" value="Lisää">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+<br>
+
+    {% endblock %}

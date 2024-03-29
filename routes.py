@@ -69,7 +69,7 @@ def edit_course(id):
     result = db.session.execute(sql, {"course_id":id})
     teacher_id = result.fetchone()[0]
     if teacher_id == users.get_user_id():
-        return render_template("edit.html", id=id)
+        return render_template("edit.html", id=id, textcontent=courses.get_textcontent(id))
     return render_template("error.html", message="Ei oikeutta sivulle")
 
 
@@ -98,14 +98,19 @@ def create_poll(id):
     courses.create_poll(id)
     if editing:
         return redirect(f"/addtocourse/{id}")
-    return redirect(f"/course/{id}")
+    return render_template("newtextproblem.html", id=id)
 
 
 # Create a text problem
 @app.route("/addtextproblem/<int:id>", methods=["POST"])
 def add_text_problem(id):
+    if courses.get_textproblems(id) == []:
+        editing = False
     courses.create_textproblem(id)
-    return redirect(f"/addtocourse/{id}")
+    if editing:
+        return redirect(f"/addtocourse/{id}")
+    return redirect(f"/course/{id}")
+
 
 # Delete the course
 @app.route("/deletecourseconfirm/<int:id>")
@@ -208,3 +213,19 @@ def textproblem_check(id):
     courses.textproblem_check(id)
     problem_id = request.form["problem_id"]
     return redirect(f"/course/{id}#{problem_id}")
+
+
+@app.route("/edittext/<int:id>", methods=["POST"])
+def textcontent_edit(id):
+    users.check_csrf()
+    oldcontent = courses.get_textcontent(id)
+    ids = courses.help_function(oldcontent, 0)
+    for c_id in ids:
+        sql = text("UPDATE TextContent SET visible = FALSE WHERE id = :id")
+        db.session.execute(sql, {"id":c_id})
+    db.session.commit()
+    newcontent = request.form["textcontent"]
+    sql = text("INSERT INTO TextContent (content, course_id, visible) VALUES (:content, :course_id, TRUE)")
+    db.session.execute(sql, {"content":newcontent, "course_id":id})
+    db.session.commit()
+    return redirect(f"/course/{id}")

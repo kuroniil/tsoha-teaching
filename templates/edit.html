@@ -2,8 +2,22 @@
 {% block content %}
 <h1>Muokkaat kurssia</h1>
 <hr>
-<h2>Lisää kurssille tehtäviä tai tekstimateriaalia</h2>
-<p><a href="/addtocourse/{{ id }}" class="btn btn-primary">Lisää</a></p>
+<h2>Muokkaa kurssimateriaalia</h2>
+{% for text in textcontent %}
+<p><form action="/edittext/{{ id }}" method="post">
+    <br>
+    <textarea type="text" name="textcontent" rows="20" cols="120">{{ text.content }}</textarea>
+    <br>
+    <input type="submit" value="Lisää">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    </form>
+</p>
+{% endfor %}
+<h2>Lisää kurssille tehtäviä</h2>
+<hr>
+<p><a href="/addtocourse/{{ id }}" class="btn btn-primary">Lisää uusia tehtäviä</a></p>
 <br>
+<h2>Poista kurssi</h2>
+<hr>
 <p><a href="/deletecourseconfirm/{{  id  }}" class="btn btn-dark">Poista kurssi</a></p>
     {% endblock %}

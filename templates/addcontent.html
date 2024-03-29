@@ -1,16 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 <h1>Muokkaat kurssia</h1>
-<b>Lisää tekstimateriaalia</b>
-<br>
-<br>
-<form action="/addcontent/{{ id }}" method="post">
-    Teksti: <br>
-    <textarea name="content" rows="10" cols="100"></textarea>
-    <br>
-    <input type="submit" value="Lisää">
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    </form>
 <br>
 <b>Lisää monivalintatehtävä</b>
 <br>

@@ -22,7 +22,7 @@ def help_function(t, index):
 
 
 def course_page(id):
-    sql = text("SELECT content FROM TextContent WHERE course_id = :id")
+    sql = text("SELECT content FROM TextContent WHERE course_id = :id AND visible = TRUE")
     result = db.session.execute(sql, {"id":id})
     contents = result.fetchall()
     f_contents = []
@@ -90,7 +90,7 @@ def add_textcontent(id):
     
 
 def add(content, course_id):
-    sql = text("INSERT INTO TextContent (content, course_id) VALUES (:content, :course_id)")
+    sql = text("INSERT INTO TextContent (content, course_id, visible) VALUES (:content, :course_id, TRUE)")
     db.session.execute(sql, {"content":"\n" + "\n" + content, "course_id":course_id})
     db.session.commit()
 
@@ -186,7 +186,7 @@ def create_textproblem(course_id):
 
 
 def get_textproblems(course_id):
-    sql = text("SELECT question, answer, problem_id FROM TextProblems WHERE course_id = :course_id")
+    sql = text("SELECT question, answer, problem_id FROM TextProblems WHERE course_id = :course_id AND visible = TRUE")
     result = db.session.execute(sql, {"course_id":course_id})
     return result.fetchall()
 
@@ -203,3 +203,9 @@ def textproblem_check(course_id):
         db.session.commit()
     else:
         print("väärin")
+
+
+def get_textcontent(course_id):
+    sql = text("SELECT id, content FROM TextContent WHERE course_id = :course_id AND visible = TRUE")
+    result = db.session.execute(sql, {"course_id":course_id})
+    return result.fetchall()
