@@ -61,5 +61,6 @@ CREATE TABLE SolvedProblems (
 CREATE TABLE CourseProblems (
   course_id INTEGER REFERENCES Courses(id),
   problem_id INTEGER,
-  id_number INTEGER
+  id_number INTEGER,
+  type TEXT
 );

@@ -50,7 +50,7 @@ def course_page(id):
         else:
             res[choices[i][0]] = [(choices[i][1], choices[i][2])]
 
-    return render_template("course.html", id=id, f_contents=f_contents, textproblems=get_textproblems(id), questions=questions, res=res, is_teacher=users.is_teacher(), choices=choices, solved_problems=solved_problems(id), course_problems=get_course_problems, count=count) 
+    return render_template("course.html", id=id, f_contents=f_contents, textproblems=get_textproblems(id), questions=questions, res=res, is_teacher=users.is_teacher(), choices=choices, solved_problems=solved_problems, course_problems=get_course_problems, count=count) 
 
 
 def create_course():
@@ -95,22 +95,23 @@ def add(content, course_id):
     db.session.commit()
 
 
-def create_poll(id):
+def create_choiceproblem(id):
     users.check_csrf()
     question = request.form["question"]    
     answer = request.form["answer"]
     sql = text("INSERT INTO ChoiceProblems (question, course_id, answer, visible) VALUES (:question, :id, :answer, TRUE) RETURNING id")
     result = db.session.execute(sql, {"question":question, "id":id, "answer":answer})
     problem_id = result.fetchone()[0]
-    sql = text("SELECT id_number FROM CourseProblems WHERE course_id = :course_id ORDER BY id_number")
+    
+    sql = text("SELECT COALESCE((SELECT id_number FROM CourseProblems WHERE course_id = :course_id ORDER BY id_number DESC LIMIT 1), 1)")
     result = db.session.execute(sql, {"course_id":id})
-    id_number = result.fetchall()
-    if id_number == []:
-        id_number = 1
-    else:
-        id_number = id_number[-1][0] + 1
-    sql = text("INSERT INTO CourseProblems (id_number, problem_id, course_id) VALUES (:id_number, :problem_id, :course_id)")
-    result = db.session.execute(sql, {"id_number":id_number, "problem_id":problem_id, "course_id":id})
+    id_number = result.fetchone()[0]
+    if id_number != 1:
+        id_number += 1
+    sql = text("INSERT INTO CourseProblems (problem_id, id_number, course_id, type) VALUES (:problem_id, :id_number, :course_id, 'choice')")
+    result = db.session.execute(sql, {"course_id":id, "id_number":id_number, "problem_id":problem_id})
+    
+    db.session.commit()
     choices = request.form.getlist("choice")
     for count, choice in enumerate(choices, 1):    
         if choice != "":
@@ -144,17 +145,24 @@ def choice_problem_check(course_id):
                 print("väärin")
 
 
-def solved_problems(course_id, user_id=""):
-    if user_id == "":
-        user_id = users.get_user_id()
-    sql = text("SELECT DISTINCT problem_id, type FROM SolvedProblems WHERE course_id = :course_id " \
-               "AND user_id = :user_id")
-    result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id})
-    return result.fetchall()
-
+def solved_problems(course_id, user_id="", type=""):
+    if type=="":
+        if user_id == "":
+            user_id = users.get_user_id()
+        sql = text("SELECT DISTINCT problem_id, type FROM SolvedProblems WHERE course_id = :course_id " \
+                "AND user_id = :user_id")
+        result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id})
+        return result.fetchall()
+    else:
+        if user_id == "":
+            user_id = users.get_user_id()
+        sql = text("SELECT DISTINCT problem_id, type FROM SolvedProblems WHERE course_id = :course_id " \
+                "AND user_id = :user_id AND type = :type")
+        result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id, "type":type})
+        return result.fetchall()
 
 def get_course_problems(course_id):
-    sql = text("SELECT problem_id, id_number FROM CourseProblems WHERE course_id = :course_id")
+    sql = text("SELECT problem_id, type FROM CourseProblems WHERE course_id = :course_id")
     result = db.session.execute(sql, {"course_id":course_id})
     return result.fetchall()
 
@@ -180,7 +188,7 @@ def create_textproblem(course_id):
     id_number = result.fetchone()[0]
     if id_number != 1:
         id_number += 1
-    sql = text("INSERT INTO CourseProblems (problem_id, id_number, course_id) VALUES (:problem_id, :id_number, :course_id)")
+    sql = text("INSERT INTO CourseProblems (problem_id, id_number, course_id, type) VALUES (:problem_id, :id_number, :course_id, 'text')")
     result = db.session.execute(sql, {"course_id":course_id, "id_number":id_number, "problem_id":problem_id})
     db.session.commit()
 
@@ -207,5 +215,11 @@ def textproblem_check(course_id):
 
 def get_textcontent(course_id):
     sql = text("SELECT id, content FROM TextContent WHERE course_id = :course_id AND visible = TRUE")
+    result = db.session.execute(sql, {"course_id":course_id})
+    return result.fetchall()
+
+
+def get_choiceproblems(course_id):
+    sql = text("SELECT id, question FROM ChoiceProblems WHERE course_id = :course_id AND visible = TRUE")
     result = db.session.execute(sql, {"course_id":course_id})
     return result.fetchall()

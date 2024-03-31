@@ -14,7 +14,7 @@
 {{ question[1] }}
 &nbsp;
 &nbsp;
-{% for problem in solved_problems %}
+{% for problem in solved_problems(id, "", "choice") %}
 {% if problem.problem_id == question[0] %}
 <div style = "position:relative; top:5px; width:165px; border-radius:10px; padding:0.8%; color:white; background-color:rgb(34, 165, 45);">
     Oikein ratkaistu &#10003;
@@ -30,7 +30,7 @@
 <hr>
 {% endfor %}
 <p>
-    <input type="submit" value="Tarkista vastaukset">
+    <input id="check" type="submit" value="Tarkista vastaukset">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <input type="hidden" name="id" value="{{ id }}">
     </form>
@@ -41,7 +41,7 @@
 <p>
 <b>Tehtävä {{ count + loop.index }}.</b>
 {{  problem.question  }}
-{% for solved_problem in solved_problems %}
+{% for solved_problem in solved_problems(id, "", "text") %}
 {% if problem.problem_id == solved_problem.problem_id %}
 <div style = "position:relative; top:5px; width:165px; border-radius:10px; padding:0.8%; color:white; background-color:rgb(34, 165, 45);">
     Oikein ratkaistu &#10003;

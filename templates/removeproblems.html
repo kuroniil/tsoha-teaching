@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+<h1>Poista tehtäviä</h1>
+<hr>
+<h2>Monivalintatehtävät</h2>
+<hr>
+<br>
+{% for choiceproblem in choiceproblems %}
+<b>Tehtävä {{ loop.index }}.</b>{{ choiceproblem.question }}
+<p>
+    <form action="/removeproblems/{{ id }}" method="post">
+        <input type="hidden" name="problemtype" value="choice">
+        <input type="hidden" name="pid" value="{{ choiceproblem.id }}">
+        <input type="submit" value="Poista tehtävä" class="btn btn-danger">
+    </form>
+</p>
+<br>
+{% endfor %}  
+<h2>Tekstitehtävät</h2>  
+<hr>
+<br>
+{% for textproblem in textproblems %}
+<b>Tehtävä {{ count + loop.index }}.</b>{{ textproblem.question }}
+<p>
+    <form action="/removeproblems/{{ id }}" method="post">
+        <input type="hidden" name="problemtype" value="text">
+        <input type="hidden" name="pid" value="{{ textproblem.problem_id }}">
+        <input type="submit" value="Poista tehtävä" class="btn btn-danger">
+    </form>
+</p>
+<br>
+{% endfor %}  
+{% endblock %}

@@ -6,64 +6,117 @@
 <h1>Analytiikka</h1>
 <hr>
     {% if session.username %}
-    {% if is_teacher() == False %}
-    {% if not id %}
-    <p>
-    {% for course in courses() %}
-    <table style="width:100%">
-        <h2>{{ course[0] }}</h2>
-        <tr>
-            <th>Tehtävä</th>
-            <th>Tila</th> 
-          </tr>
-        {% for problem in problems(course.id) %}
-    {% if problem.problem_id in help_function(solved_problems(course.id), 0) %}
-    <tr>
-      <td class="bgcolor">Tehtävä {{ loop.index  }}</td>
-      <td class="bgcolor">Ratkaistu</td>
-    </tr>
-    {% else %}
-    <tr>
-        <td class="bgcolor2">Tehtävä {{ loop.index  }}</td>
-        <td class="bgcolor2">Ei ratkaistu</td>
-      </tr>
-      {% endif %}
-        {% endfor %}
-        <p>
-    </table>
-    <p>
-    {% endfor %}
-    {% else %}
-    <table style="width:100%">
-      <h2>{{ course_name }}</h2>
-      <p>
-        <br>
-      <tr>
-          <th>Tehtävä</th>
-          <th>Tila</th> 
-        </tr>
-      {% for problem in problems(id) %}
-        {% if problem.problem_id in help_function(solved_problems(id), 0) %}
-    <tr>
-    <td class="bgcolor">Tehtävä {{ loop.index  }}</td>
-    <td class="bgcolor">Ratkaistu</td>
-  </tr>
+      {% if is_teacher() == False %}
+        {% if not id %}
+          {% for course in courses() %}
+          <table style="width:100%">
+            <h2>{{ course[0] }}</h2>
+            <br>
+            <tr>
+                <th>Tehtävä</th>
+                <th>Tila</th> 
+              </tr>       
+                <h3>Monivalintatehtävät</h3>   
+                <p>
+                        {% for problem in choiceproblems(course.id) %}
+                          {% if problem.id in help_function(choiceproblems(course.id), 0) %}
+                            {% if problem.id in help_function(solved_problems(course.id, "", "choice"), 0) %}      
+                                <tr>
+                                  <td class="bgcolor">Tehtävä {{ loop.index }}</td>
+                                  <td class="bgcolor">Ratkaistu</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td class="bgcolor2">Tehtävä {{ loop.index  }}</td>
+                                    <td class="bgcolor2">Ei ratkaistu</td>
+                                  </tr>
+                            {% endif %}
+                                </p>
+                          {% endif %}
+                        {% endfor %}
+                        <table style="width:100%">
+                          <p>
+                          <h3>Tekstitehtävät</h3>
+                          <tr>
+                              <th>Tehtävä</th>
+                              <th>Tila</th> 
+                            </tr> 
+                      {% set length = len(choiceproblems(course.id)) %}
+                        {% for problem in textproblems(course.id) %}
+                          {% if problem.problem_id in help_function(textproblems(course.id), 2) %}
+                            {% if problem.problem_id in help_function(solved_problems(course.id, "", "text"), 0) %}
+                                <tr>
+                                  <td class="bgcolor">Tehtävä {{ length + loop.index  }}</td>
+                                  <td class="bgcolor">Ratkaistu</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td class="bgcolor2">Tehtävä {{ length + loop.index  }}</td>
+                                    <td class="bgcolor2">Ei ratkaistu</td>
+                                  </tr>
+                            {% endif %}
+                          {% endif %}
+                      {% endfor %}
+                    </table>
+                  </p>
+                    <br>
+                    <hr>
+          {% endfor %}
         {% else %}
-    <tr>
-      <td class="bgcolor2">Tehtävä {{ loop.index  }}</td>
-      <td class="bgcolor2">Ei ratkaistu</td>
-    </tr>
+          <table style="width:100%">
+            <h2>{{ course_name }}</h2>
+            <p>
+            <br>
+              <tr>
+                <th>Tehtävä</th>
+                <th>Tila</th> 
+              </tr>
+            {% for problem in choiceproblems(id) %}
+              {% if problem.id in help_function(choiceproblems(id), 0) %}
+                {% if problem.id in help_function(solved_problems(id, "", "choice"), 0) %}  
+                  <tr>
+                    <td class="bgcolor">Tehtävä {{ loop.index  }}</td>
+                    <td class="bgcolor">Ratkaistu</td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td class="bgcolor2">Tehtävä {{ loop.index  }}</td>
+                    <td class="bgcolor2">Ei ratkaistu</td>
+                  </tr>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+                
+
+            {% set length = len(choiceproblems(id)) %}
+              {% for problem in textproblems(id) %}
+                {% if problem.problem_id in help_function(textproblems(id), 2) %}
+                  {% if problem.problem_id in help_function(solved_problems(id, "", "text"), 0) %}
+                    <tr>
+                      <td class="bgcolor">Tehtävä {{ length + loop.index  }}</td>
+                      <td class="bgcolor">Ratkaistu</td>
+                    </tr>
+                  {% else %}
+                    <tr>
+                      <td class="bgcolor2">Tehtävä {{ length + loop.index  }}</td>
+                      <td class="bgcolor2">Ei ratkaistu</td>
+                    </tr>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+        {% endif %}
+      {% else %}
+        <h4>Valitse kurssi, minkä tilastot haluat nähdä</h4>
+        <br>
+          {% if courses() == [] %}
+            Opettajat näkevät vain oppilaiden tulokset. Luo kurssi nähdäksesi tilastot
+          {% else %}
+          {% endif %}
+            {% for course in courses() %}
+              <b>{{ course[0 ]}}</b> <p><a href="/stats/{{ course.id }}">Näytä tilastot</a></p>
+            {% endfor %}
       {% endif %}
-    {% endfor %}
-    {% endif %}
     {% else %}
-    <h4>Valitse kurssi, minkä tilastot haluat nähdä</h4>
-    <br>
-    {% for course in courses() %}
-    <b>{{ course[0 ]}}</b> <p><a href="/stats/{{ course.id }}">Näytä tilastot</a></p>
-    {% endfor %}
+      Kirjaudu sisään nähdäksesi tilastot
     {% endif %}
-    {% else %}
-    Kirjaudu sisään nähdäksesi tilastot
-    {% endif %}
-    {% endblock %}
+{% endblock %}

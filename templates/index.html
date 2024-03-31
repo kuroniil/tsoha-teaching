@@ -9,13 +9,18 @@
 {% if count == 0 %}
 <hr>
 <br>
-<h4>Et ole liittynyt vielä millekään kurssille. Voit liittyä kursseille kurssisivulta.</h4>
+{% if is_teacher() == False %}
+Et ole liittynyt vielä millekään kurssille. Voit liittyä kursseille kurssisivulta.
+{% else %}
+Voit luoda kursseja kurssisivulta.
+{% endif %}
+<p>
 <br>
 <a href="/courses" class="btn btn-primary" role="button">Kurssisivulle</a>
 <a href="/logout" class="btn btn-dark" role="button">kirjaudu ulos</a>
 {% else %}
 <br>
-    {% for course in courses %}
+    {% for course in courses2 %}
     <b>{{ course.name }}</b>
 <p><a href="/course/{{ course.id }}">Näytä kurssi</a></p>
 <hr>

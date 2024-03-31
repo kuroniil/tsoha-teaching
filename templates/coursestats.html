@@ -20,19 +20,37 @@
           </tr>
         <p>
         <tr>
-            {% for problem in course_problems %}
-                {% if problem.problem_id in help_function(solved_problems(course_id, student.user_id), 0) %}
-                    <td class="bgcolor">{{ loop.index }}.</td>
-                    <td class="bgcolor">ratkaistu</td> 
+            {% for problem in choiceproblems(course_id) %}
+              {% if problem.id in help_function(choiceproblems(course_id), 0) %}
+                {% if problem.id in help_function(solved_problems(course_id, student.user_id, "choice"), 0) %}
+                    <td class="bgcolor">Tehtävä {{ loop.index }}.</td>
+                    <td class="bgcolor">Ratkaistu</td> 
                     </tr>
                 {% else %}
         <tr>
-                <td class="bgcolor2">{{ loop.index }}</td>
-                <td class="bgcolor2">ei ratkaistu</td> 
+                <td class="bgcolor2">Tehtävä {{ loop.index }}</td>
+                <td class="bgcolor2">Ei ratkaistu</td> 
                 </tr>
                 {% endif %}
+              {% endif %}
             {% endfor %}
             <p>
-    {% endif %}
+                {% set length = len(choiceproblems(course_id)) %}
+                    {% for problem in textproblems(course_id) %}
+                        {% if problem.problem_id in help_function(textproblems(course_id), 2) %}
+                            {% if problem.problem_id in help_function(solved_problems(course_id, student.user_id, "text"), 0) %}
+                            <tr>
+                                <td class="bgcolor">Tehtävä {{ length + loop.index  }}</td>
+                                <td class="bgcolor">Ratkaistu</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td class="bgcolor2">Tehtävä {{ length + loop.index  }}</td>
+                                <td class="bgcolor2">Ei ratkaistu</td>
+                            </tr>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+        {% endif %}
     {% endfor %}
 {% endblock %}

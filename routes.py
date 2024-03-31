@@ -9,8 +9,8 @@ from db import db
 @app.route("/")
 def index():
     if users.get_user_id():
-        courses = users.get_user_courses()
-        return render_template("index.html", courses=courses, count=len(courses))
+        courses2 = users.get_user_courses()
+        return render_template("index.html", courses2=courses2, count=len(courses2), is_teacher=users.is_teacher)
     return render_template("index.html")
 
 
@@ -86,16 +86,16 @@ def add_textcontent(id):
         return redirect(f"/addtocourse/{id}")
     else:
         courses.add_textcontent(id)
-        return render_template("newcoursepoll.html", id=id)
+        return render_template("newchoiceproblem.html", id=id)
 
 
-# Create a poll
+# Create a choiceproblem
 @app.route("/create/<int:id>", methods=["POST"])
-def create_poll(id):
+def create_choiceproblem(id):
     editing = False
     if courses.is_editing(id):
         editing = True
-    courses.create_poll(id)
+    courses.create_choiceproblem(id)
     if editing:
         return redirect(f"/addtocourse/{id}")
     return render_template("newtextproblem.html", id=id)
@@ -104,6 +104,7 @@ def create_poll(id):
 # Create a text problem
 @app.route("/addtextproblem/<int:id>", methods=["POST"])
 def add_text_problem(id):
+    editing = True
     if courses.get_textproblems(id) == []:
         editing = False
     courses.create_textproblem(id)
@@ -130,7 +131,7 @@ def delete_course(id):
 @app.route("/answer/<int:id>", methods=["POST"])
 def problem_check(id):
     courses.choice_problem_check(id)
-    return redirect(f"/course/{id}")
+    return redirect(f"/course/{id}#check")
     
 
 # login
@@ -180,7 +181,7 @@ def register():
 # statistics
 @app.route("/stats")
 def stats():
-    return render_template("stats.html", solved_problems=courses.solved_problems, courses=users.get_user_courses, problems=courses.get_course_problems, help_function=courses.help_function, is_teacher=users.is_teacher)
+    return render_template("stats.html", len=len, textproblems=courses.get_textproblems, choiceproblems=courses.get_choiceproblems, solved_problems=courses.solved_problems, courses=users.get_user_courses, problems=courses.get_course_problems, help_function=courses.help_function, is_teacher=users.is_teacher)
 
 
 @app.route("/stats/<int:id>")
@@ -193,7 +194,7 @@ def stats_by_course(id):
     user_id = users.get_user_id()
     if users.is_teacher():
         if user_id == teacher_id:
-            return render_template("coursestats.html", get_username=users.get_username, help_function=courses.help_function, solved_problems=courses.solved_problems, course_id=id, course_problems=courses.get_course_problems(id), course_students=courses.course_students(id), course_name=course_name, get_user_id=users.get_user_id)
+            return render_template("coursestats.html", len=len, get_username=users.get_username, help_function=courses.help_function, solved_problems=courses.solved_problems, course_id=id, course_problems=courses.get_course_problems(id), course_students=courses.course_students(id), course_name=course_name, get_user_id=users.get_user_id, choiceproblems=courses.get_choiceproblems, textproblems=courses.get_textproblems)
         else:
             return render_template("error.html", message="Ei oikeutta sivulle")
     else:
@@ -202,7 +203,7 @@ def stats_by_course(id):
         students = result.fetchall()
         studentlist = courses.help_function(students, 0)
         if user_id in studentlist:
-            return render_template("stats.html", solved_problems=courses.solved_problems, courses=users.get_user_courses, problems=courses.get_course_problems, help_function=courses.help_function, is_teacher=users.is_teacher, id=id, course_name=course_name)
+            return render_template("stats.html", len=len, solved_problems=courses.solved_problems, courses=users.get_user_courses, problems=courses.get_course_problems, help_function=courses.help_function, is_teacher=users.is_teacher, id=id, course_name=course_name, choiceproblems=courses.get_choiceproblems, textproblems=courses.get_textproblems)
         else:
             return render_template("error.html", message="Et ole kurssilla tai et ole kirjautunut sisään")
         
@@ -229,3 +230,23 @@ def textcontent_edit(id):
     db.session.execute(sql, {"content":newcontent, "course_id":id})
     db.session.commit()
     return redirect(f"/course/{id}")
+
+
+@app.route("/removeproblems/<int:id>", methods=["GET", "POST"])
+def remove_courseproblems(id):
+    if request.method == "GET":
+        return render_template("removeproblems.html", id=id, choiceproblems=courses.get_choiceproblems(id), textproblems=courses.get_textproblems(id), count=len(courses.get_choiceproblems(id)))
+    if request.method == "POST":
+        type = request.form["problemtype"]
+        problem_id = request.form["pid"]
+        print(problem_id)
+        print(type)
+        if type == "choice":
+            sql = text("UPDATE ChoiceProblems SET visible = FALSE WHERE id = :id")
+            db.session.execute(sql, {"id":problem_id})
+            db.session.commit()
+        elif type == "text":
+            sql = text("UPDATE TextProblems SET visible = FALSE WHERE problem_id = :problem_id")
+            db.session.execute(sql, {"problem_id":problem_id})
+            db.session.commit()
+    return redirect(f"/edit/{id}")
