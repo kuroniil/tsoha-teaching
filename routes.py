@@ -237,6 +237,7 @@ def remove_courseproblems(id):
     if request.method == "GET":
         return render_template("removeproblems.html", id=id, choiceproblems=courses.get_choiceproblems(id), textproblems=courses.get_textproblems(id), count=len(courses.get_choiceproblems(id)))
     if request.method == "POST":
+        users.check_csrf()
         type = request.form["problemtype"]
         problem_id = request.form["pid"]
         print(problem_id)

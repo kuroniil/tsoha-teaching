@@ -1,9 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
 <h1>Muokkaat kurssia</h1>
-<br>
-<b>Lisää monivalintatehtävä</b>
-<br>
+<hr>
+<p>
+<h2>Lisää monivalintatehtävä</h2>
+</p>
 <br>
 <form action="/create/{{ id }}" method="POST">
     <p>Kysymys:<br>
@@ -22,11 +23,9 @@
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     </form>
     <br>
-
-
-<b>Lisää tehtävä tekstivastauksella</b>
-<br>
-<br>
+<p>
+<h2>Lisää tehtävä tekstivastauksella</h2>
+</p>
 <form id=1 action="/addtextproblem/{{ id }}" method="post">
     Kysymys: <br>
     <input type="text" name="textquestion" required size="40">

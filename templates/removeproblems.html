@@ -6,12 +6,14 @@
 <hr>
 <br>
 {% for choiceproblem in choiceproblems %}
-<b>Tehtävä {{ loop.index }}.</b>{{ choiceproblem.question }}
+<b>Tehtävä {{ loop.index }}.</b>
+{{ choiceproblem.question }}
 <p>
     <form action="/removeproblems/{{ id }}" method="post">
         <input type="hidden" name="problemtype" value="choice">
         <input type="hidden" name="pid" value="{{ choiceproblem.id }}">
         <input type="submit" value="Poista tehtävä" class="btn btn-danger">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     </form>
 </p>
 <br>
@@ -20,12 +22,14 @@
 <hr>
 <br>
 {% for textproblem in textproblems %}
-<b>Tehtävä {{ count + loop.index }}.</b>{{ textproblem.question }}
+<b>Tehtävä {{ count + loop.index }}.</b>
+{{ textproblem.question }}
 <p>
     <form action="/removeproblems/{{ id }}" method="post">
         <input type="hidden" name="problemtype" value="text">
         <input type="hidden" name="pid" value="{{ textproblem.problem_id }}">
         <input type="submit" value="Poista tehtävä" class="btn btn-danger">
+        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     </form>
 </p>
 <br>
