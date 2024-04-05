@@ -25,11 +25,6 @@ def course_page(id):
     sql = text("SELECT content FROM TextContent WHERE course_id = :id AND visible = TRUE")
     result = db.session.execute(sql, {"id":id})
     contents = result.fetchall()
-    f_contents = []
-    for content in contents:
-        f_content = content[0].replace("\n", "<br>")
-        f_content = f_content.replace("\r", "")
-        f_contents.append(f_content)
     
     sql = text("SELECT id, question, answer FROM ChoiceProblems WHERE course_id = :course_id AND visible = TRUE")
     result = db.session.execute(sql, {"course_id":id})
@@ -50,7 +45,7 @@ def course_page(id):
         else:
             res[choices[i][0]] = [(choices[i][1], choices[i][2])]
 
-    return render_template("course.html", id=id, f_contents=f_contents, textproblems=get_textproblems(id), questions=questions, res=res, is_teacher=users.is_teacher(), choices=choices, solved_problems=solved_problems, course_problems=get_course_problems, count=count) 
+    return render_template("course.html", id=id, contents=contents, textproblems=get_textproblems(id), questions=questions, res=res, is_teacher=users.is_teacher(), choices=choices, solved_problems=solved_problems, course_problems=get_course_problems, count=count) 
 
 
 def create_course():

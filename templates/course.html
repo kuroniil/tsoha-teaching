@@ -2,8 +2,8 @@
 
 {% block content %}
 <h1>Kurssimateriaali</h1>
-{% for content in f_contents%}
-{{ content | safe }}
+{% for content in contents%}
+<div style="white-space: pre-wrap;">{{ content.content }}</div>
 {%endfor%}
 <br>
 <br>
