@@ -1,15 +1,17 @@
 {% extends "layout.html" %}
 {% block title %}Uusi kurssi{% endblock %} 
 {% block content %}
-<h1>Uusi kurssi</h1>
+<h1><u>Uusi kurssi</u></h1>
 <br>
-<br>
+<h5>Aloita kurssin luominen antamalla kurssille nimi.</h5>
+<p>
 <form action="/newcoursename" method="post">
-    <b>Lisää kurssin nimi: </b>
-    <input type="text" name="course_name" value="Kurssin nimi" size="20">
-    <input type="submit" value="Lisää">
+    <p>
+    <input type="text" name="course_name" placeholder="Kurssin nimi" size="20">
+    <input type="submit" value="Lisää" class="btn btn-success">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    </form>
-<br>
+    </form></p>
+</p>
+    <br>
 <br>
 {% endblock %}

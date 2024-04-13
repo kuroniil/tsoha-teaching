@@ -9,11 +9,12 @@
 {% if count == 0 %}
 {% if is_teacher() == False %}
 <br>
-<p><h5>Liity kursseille kurssisivulta.</h5></p>
+<p>Liity kursseille kurssisivulta.</p>
 <p>Olet kirjautunut sisään käyttäjällä {{  session.username  }}</p>
 {% else %}
+<br>
+<p>Voit luoda kursseja kurssisivulta.</p>
 <p>Olet kirjautunut sisään käyttäjällä {{  session.username  }}</p>
-Voit luoda kursseja kurssisivulta.
 {% endif %}
 <p>
 <br>
@@ -40,13 +41,15 @@ Voit luoda kursseja kurssisivulta.
         <br>
     <form action="/login" method="POST">
         <p>Käyttäjätunnus: <br>
-        <input type="username" name="username"></p>
-        <p>Salasana: <br>
-        <input type="password" name="password"></p>
-        <input type="submit" value="Kirjaudu">
-        </form>
+        <input type="username" name="username" placeholder="Käyttäjätunnus"></p>
+        <p>Salasana: 
         <br>
-        <a href="/register" class="btn btn-primary" role="button">Luo uusi tili</a>
+        <input type="password" name="password" placeholder="Salasana"></p>
+        <input type="submit" value="Kirjaudu" class="btn btn-primary">
+        </form>
+        </p>
+    <p>Etkä ole luonut tiliä? <a href="/register"><u>Luo uusi tili tästä</u></a></p>
+    
        
         {% endif %}
 <br>
