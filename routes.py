@@ -130,7 +130,11 @@ def delete_course(id):
 # Check answers
 @app.route("/answer/<int:id>", methods=["POST"])
 def problem_check(id):
-    courses.choice_problem_check(id)
+    result = courses.choice_problem_check(id)
+    wrong_choices = result[0]
+    solved = result[1]
+    session["solved"] = solved
+    session["wrong_choices"] = wrong_choices
     return redirect(f"/course/{id}#check")
     
 
@@ -212,7 +216,14 @@ def stats_by_course(id):
 @app.route("/textproblemcheck/<int:id>", methods=["POST"])
 def textproblem_check(id):
     users.check_csrf()
-    courses.textproblem_check(id)
+    result = courses.textproblem_check(id)
+    if result != None:
+        pid = result[0]
+        solved = result[1]
+        session["wrong_answer"] = int(pid)
+        session["solvedtext"] = solved
+    else:
+        session["wrong_answer"] = -1
     problem_id = request.form["problem_id"]
     return redirect(f"/course/{id}#{problem_id}")
 

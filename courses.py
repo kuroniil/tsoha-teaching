@@ -126,6 +126,9 @@ def delete_course(id):
 def choice_problem_check(course_id):
     users.check_csrf()
     user_id = users.get_user_id()
+    wrong_choice = []
+    sp = solved_problems(course_id, user_id, "choice")
+    solved = help_function(sp, 0)
     for choice_id, ans in request.form.items():
         if choice_id != "id" and choice_id != "csrf_token":
             problem_id = choice_id.split(",")[0].strip("(")
@@ -136,8 +139,9 @@ def choice_problem_check(course_id):
                 db.session.commit()
 
             else:
-                #incorrect = choice_id.split(",")[0].strip(" (")
-                print("väärin")
+                incorrect = choice_id.split(",")[0].strip(" (")
+                wrong_choice.append(int(incorrect))
+    return wrong_choice, solved
 
 
 def solved_problems(course_id, user_id="", type=""):
@@ -155,6 +159,7 @@ def solved_problems(course_id, user_id="", type=""):
                 "AND user_id = :user_id AND type = :type")
         result = db.session.execute(sql, {"course_id":course_id, "user_id":user_id, "type":type})
         return result.fetchall()
+
 
 def get_course_problems(course_id):
     sql = text("SELECT problem_id, type FROM CourseProblems WHERE course_id = :course_id")
@@ -204,7 +209,9 @@ def textproblem_check(course_id):
         db.session.execute(sql, {"course_id":course_id, "problem_id":problem_id, "user_id":user_id})
         db.session.commit()
     else:
-        print("väärin")
+        sp = solved_problems(course_id, user_id, "text")
+        solved = help_function(sp, 0)
+        return problem_id, solved
 
 
 def get_textcontent(course_id):

@@ -19,7 +19,13 @@
 <div style = "position:relative; top:5px; width:165px; border-radius:10px; padding:0.8%; color:white; background-color:rgb(34, 165, 45);">
     Oikein ratkaistu &#10003;
  </div>
-{% else %}
+ {% endif %}
+{% endfor %}
+{% for wrong_choice in session.wrong_choices %}
+{% if wrong_choice == question[0] and wrong_choice not in session.solved %}
+<div style = "position:relative; top:5px; width:85px; border-radius:10px; padding:0.8%; color:white; background-color:rgb(255, 0, 0);">
+    Väärin &#10005;
+</div>
 {% endif %}
 {% endfor %}
 <hr>
@@ -41,14 +47,19 @@
 <p>
 <b>Tehtävä {{ count + loop.index }}.</b>
 {{  problem.question  }}
+{% if problem.problem_id == session.wrong_answer and problem.problem_id not in session.solvedtext %}
+<div style = "position:relative; top:5px; width:85px; border-radius:10px; padding:0.8%; color:white; background-color:rgb(255, 0, 0);">
+    Väärin &#10005;
+</div>
+{% endif %}
 {% for solved_problem in solved_problems(id, "", "text") %}
 {% if problem.problem_id == solved_problem.problem_id %}
 <div style = "position:relative; top:5px; width:165px; border-radius:10px; padding:0.8%; color:white; background-color:rgb(34, 165, 45);">
     Oikein ratkaistu &#10003;
  </div>
-{% else %}
 {% endif %}
 {% endfor %}
+
 <hr>
 </p>
 <p><form id="{{ problem.problem_id }}" action="{{ url_for('textproblem_check', id=id) }}" method="post">
