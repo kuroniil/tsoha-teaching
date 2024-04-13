@@ -3,4 +3,15 @@
 {% block content %}
 <h1>Virhe: </h1>
 {{  message  }}
+<br>
+<br>
+{% if register %}
+<p><a class="btn btn-primary" href="/register">Takaisin</a></p>
+{% endif %}
+{% if creatingcourse %}
+<p><a class="btn btn-primary" href="/newcoursename">Takaisin</a></p>
+{% endif %}
+{% if login %}
+<p><a class="btn btn-primary" href="/login">Takaisin</a></p>
+{% endif %}
 {% endblock %}

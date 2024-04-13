@@ -5,13 +5,14 @@
 <hr>
 {% if session.username %}
     <p>  
-<h3>Omat kurssisi</h3>
+<u><h3>Omat kurssisi</u></h3>
 {% if count == 0 %}
-<hr>
-<br>
 {% if is_teacher() == False %}
-Et ole liittynyt vielä millekään kurssille. Voit liittyä kursseille kurssisivulta.
+<br>
+<p><h5>Liity kursseille kurssisivulta.</h5></p>
+<p>Olet kirjautunut sisään käyttäjällä {{  session.username  }}</p>
 {% else %}
+<p>Olet kirjautunut sisään käyttäjällä {{  session.username  }}</p>
 Voit luoda kursseja kurssisivulta.
 {% endif %}
 <p>
@@ -35,7 +36,7 @@ Voit luoda kursseja kurssisivulta.
 <br>
 {% endif %}
 {% else %}
-<h4>Kirjaudu sisään</h4>
+<h4><u>Kirjaudu sisään</u></h4>
         <br>
     <form action="/login" method="POST">
         <p>Käyttäjätunnus: <br>

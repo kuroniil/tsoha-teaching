@@ -1,44 +1,105 @@
 {% extends "layout.html" %}
 {% block content %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <h1>Muokkaat kurssia</h1>
 <hr>
 <p>
 <h2>Lisää monivalintatehtävä</h2>
 </p>
 <br>
-<form action="/create/{{ id }}" method="POST">
+<form id="choiceform" action="/create/{{ id }}" method="POST" onsubmit="return empty();">
     <p>Kysymys:<br>
-    <input type="text" name="question"></p>
+    <input type="text" name="question" id="inputQuestion"></p>
     <p>Vaihtoehto 1:<br>
-    <input type="text" name="choice"></p>
+    <input type="text" name="choice" id="choice1"></p>
     <p>Vaihtoehto 2:<br>
-    <input type="text" name="choice"></p>
+    <input type="text" name="choice" id="choice2"></p>
     <p>Vaihtoehto 3:<br>
-    <input type="text" name="choice"></p>
+    <input type="text" name="choice" id="choice3"></p>
     <p>Vaihtoehto 4:<br>
-    <input type="text" name="choice"></p>
+    <input type="text" name="choice" id="choice4"></p>
     <p>Oikea vastaus vaihtoehto:<br>
-    <input type="number" min="1" max="4" name="answer" required></p>
+    <input type="number" min="1" max="4" name="answer" id="number" required></p>
     <input type="submit" value="Lisää tehtävä">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     </form>
     <br>
+<script>
+        
+        window.onbeforeunload = function() {
+        if (!x) { 
+            sessionStorage.setItem("question", $('#inputQuestion').val());
+            sessionStorage.setItem("choice1", $('#choice1').val());
+            sessionStorage.setItem("choice2", $('#choice2').val());
+            sessionStorage.setItem("choice3", $('#choice3').val());
+            sessionStorage.setItem("choice4", $('#choice4').val());
+            sessionStorage.setItem("number", $('#number').val());
+            }
+        if (!y) { 
+            sessionStorage.setItem("textquestion", $('#textquestion').val());
+            sessionStorage.setItem("textanswer", $('#textanswer').val());
+            }
+        }   
+    
+        window.onload = function() { 
+            var question = sessionStorage.getItem("question");
+            var choice1 = sessionStorage.getItem("choice1");
+            var choice2 = sessionStorage.getItem("choice2");
+            var choice3 = sessionStorage.getItem("choice3");
+            var choice4 = sessionStorage.getItem("choice4");
+            var number = sessionStorage.getItem("number");
+            var textquestion = sessionStorage.getItem("textquestion");
+            var textanswer = sessionStorage.getItem("textanswer");
+
+            if (question !== null) $('#inputQuestion').val(question);
+            if (choice1 !== null) $('#choice1').val(choice1);
+            if (choice2 !== null) $('#choice2').val(choice2);
+            if (choice3 !== null) $('#choice3').val(choice3);
+            if (choice4 !== null) $('#choice4').val(choice4);
+            if (number !== null) $('#number').val(number);
+            if (textquestion !== null) $('#textquestion').val(textquestion);
+            if (textanswer !== null) $('#textanswer').val(textanswer);
+        } 
+
+        var x = false
+
+        function empty() {
+            x = true
+            sessionStorage.removeItem("question");
+            sessionStorage.removeItem("choice1");
+            sessionStorage.removeItem("choice2");
+            sessionStorage.removeItem("choice3");
+            sessionStorage.removeItem("choice4");
+            sessionStorage.removeItem("number");
+            return true;
+        }
+</script>
 <p>
 <h2>Lisää tehtävä tekstivastauksella</h2>
 </p>
-<form id=1 action="/addtextproblem/{{ id }}" method="post">
+<form id=1 action="/addtextproblem/{{ id }}" method="post" onsubmit="return empty2();">
     Kysymys: <br>
-    <input type="text" name="textquestion" required size="40">
+    <input type="text" name="textquestion" id="textquestion" required size="40">
     <br>
     <br>
     Oikea vastaus:
     <br>
-    <input type="text" name="textanswer" required size="40">
+    <input type="text" name="textanswer" id="textanswer" required size="40">
     <br>
     <br>
     <input type="submit" value="Lisää">
     <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
-    </form>
+    </form> 
 <br>
+<script>
 
+    var y = false
+
+    function empty2() {
+        y = true
+        sessionStorage.removeItem("textquestion");
+        sessionStorage.removeItem("textanswer");
+        return true;
+    }
+</script>
     {% endblock %}

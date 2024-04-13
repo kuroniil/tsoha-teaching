@@ -3,11 +3,10 @@
 {% block content %}
 <h1>Kurssit</h1>
 <hr>
-<h4>Tältä sivulta voit liittyä kursseille</h4>
+<h4><u>Tältä sivulta voit liittyä kursseille</u></h4>
 
 {% if session.username %} 
-
-<hr>
+<br>
 {% for course in courses %}
 {% if course.id not in user_courses %}
 <b>{{ course.name }}</b>

@@ -37,7 +37,7 @@ def new_course_name():
             db.session.commit()
             return render_template("newcourse.html", course_id=course_id, course_name=course_name)
         except:
-            return render_template("error.html", message="kurssin nimi on jo käytössä")
+            return render_template("error.html", message="kurssin nimi on jo käytössä", creatingcourse=True)
 
 
 @app.route("/newcourse", methods=["GET","POST"])
@@ -145,7 +145,7 @@ def login():
         if users.login(username, password):
             return redirect("/")
         else:
-            return render_template("error.html", message="Virheellinen käyttäjänimi tai salasana")
+            return render_template("error.html", message="Virheellinen käyttäjänimi tai salasana", login=True)
         
 
 # logout
@@ -165,18 +165,19 @@ def register():
         username = request.form["username"]
         password1 = request.form["password1"]
         password2 = request.form["password2"]
-        if password1 == password2:
-            if 1 < len(username) < 11:
+        if password1 == password2 and 3 < len(password1) < 20:
+            if 1 < len(username) < 16:
                 if users.register(username, password1, title):
                     users.login(username, password1)
                     return redirect("/")
                 else:
-                    return render_template("error.html", message="Käyttäjätunnus on jo käytössä")
+                    return render_template("error.html", message="Käyttäjätunnus on jo käytössä", register=True)
             else:
-                return render_template("error.html", message="Käyttäjätunnuksen tulee olle vähintään kaksi ja enintään 10 merkkiä.")
+                return render_template("error.html", message="Käyttäjätunnuksen tulee olle vähintään kaksi ja enintään 15 merkkiä.", register=True)
         elif password1 != password2:
-            return render_template("error.html", message="Anna sama salasana kaksi kertaa")
-        
+            return render_template("error.html", message="Anna sama salasana kaksi kertaa", register=True)
+        else:
+            return render_template("error.html", message="Salasanan tulee olla 4-19 merkkiä pitkä.", register=True)
 
 # statistics
 @app.route("/stats")
@@ -240,8 +241,6 @@ def remove_courseproblems(id):
         users.check_csrf()
         type = request.form["problemtype"]
         problem_id = request.form["pid"]
-        print(problem_id)
-        print(type)
         if type == "choice":
             sql = text("UPDATE ChoiceProblems SET visible = FALSE WHERE id = :id")
             db.session.execute(sql, {"id":problem_id})

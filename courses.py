@@ -170,10 +170,9 @@ def course_students(course_id):
 
 def create_textproblem(course_id):
     users.check_csrf()
-    sql = text("SELECT GREATEST((SELECT id FROM ChoiceProblems ORDER BY id DESC LIMIT 1)," \
-                "(SELECT problem_id FROM TextProblems ORDER BY problem_id DESC LIMIT 1))")
+    sql = text("SELECT COALESCE((SELECT problem_id + 1 FROM TextProblems ORDER BY problem_id DESC LIMIT 1), 1)")
     result = db.session.execute(sql)
-    problem_id = result.fetchone()[0] + 1
+    problem_id = result.fetchone()[0]
     answer = request.form["textanswer"]
     question = request.form["textquestion"]
     sql = text("INSERT INTO TextProblems (course_id, problem_id, answer, visible, question) VALUES (:course_id, :problem_id, :answer, TRUE, :question)")
