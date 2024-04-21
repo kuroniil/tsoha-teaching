@@ -44,7 +44,6 @@
 <h2>Muut tehtävät</h2>
 <br>
 {% for problem in textproblems %}
-<p>
 <b>Tehtävä {{ count + loop.index }}.</b>
 {{  problem.question  }}
 {% if problem.problem_id == session.wrong_answer and problem.problem_id not in session.solvedtext %}
