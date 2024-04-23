@@ -14,6 +14,8 @@ Sovelluksen ominaisuuksia ovat:
 
 Sovelluksen kaikki perusominaisuudet ovat nyt valmiina.
 
+<br>
+
 # Käynnistysohjeet
 
 Kloonaa repositorio ja luo sen juurikansioon .env-tiedosto. Muokkaa .env-tiedosto seuraavanlaiseksi:
