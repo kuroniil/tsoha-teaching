@@ -86,7 +86,7 @@ def add_textcontent(id):
 
 def add(content, course_id):
     sql = text("INSERT INTO TextContent (content, course_id, visible) VALUES (:content, :course_id, TRUE)")
-    db.session.execute(sql, {"content":"\n" + "\n" + content, "course_id":course_id})
+    db.session.execute(sql, {"content":content, "course_id":course_id})
     db.session.commit()
 
 

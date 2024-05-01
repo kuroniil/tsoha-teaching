@@ -27,7 +27,6 @@ def new_course_name():
         return render_template("namecourse.html")
     elif request.method == "POST":
         name_and_id = courses.create_course_name()
-        print(name_and_id[0])
         course_name = name_and_id[0]
         teacher_id = name_and_id[1]
         try:
@@ -89,7 +88,7 @@ def add_textcontent(id):
         return render_template("newchoiceproblem.html", id=id)
 
 
-# Create a choiceproblem
+# Create a multiple-choiceproblem
 @app.route("/create/<int:id>", methods=["POST"])
 def create_choiceproblem(id):
     editing = False
